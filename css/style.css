@@ -1,0 +1,47 @@
+p {
+    position:absolute;
+    top:770px;
+    left:15px;
+    color:white;
+    background: black;
+    padding:5px;
+}
+
+h1 {
+    position:relative;
+    text-align: center;
+    color:rgb(177, 255, 0);
+    top:-800px;
+    font-size: 50px;
+    padding:5px;
+    font-family: cursive;
+}
+
+
+
+/* h2{
+position: absolute;
+text-align: center;
+color:black;
+top:-500px;
+font-size:100px; 
+}
+*/
+#eggsplash{
+    position: relative;
+    margin-left: 450px;
+    top:-770px;
+    width: 500px;
+    height: 500px;
+
+}
+
+img{
+    visibility: hidden;
+    width:0px;
+}
+
+h2 {
+    position: relative;
+    top:-700px;
+}
