@@ -2,24 +2,26 @@ var spelplan, ctx;
 var Score = 0;
 
 // Karaktär
-var plx = 40,
+var pl,
+    plx = 40,
     ply = 400,
     plvy = 10;
 
-// Övre Stapel
-var upx = 700,
-    
-    upvx = -10;
 
+var sx = 700,
+    sy = 0,
+    vx = -15;
 
-//Nedre Stapel 
-var downx = 700,
-    downy = 0,
-    downvx = -10;
+var fail = "false"
+
 
 // Hastighet på bakrundsbilden
 var mx = 0,
     mvx = -2;
+
+
+var object = [];
+
 
 
 var bgSound = new Howl({
@@ -34,136 +36,158 @@ function start() {
 
     // Gömmer Eggsplash från början
     document.getElementById("eggsplash").style.visibility = "hidden"
+    pl = new egg(40, 400, 75, 75);  
+
 
     // Uppdaterar var 25 ms
     window.setInterval(update, 25);
 }
 
 
-// Rita Övre staplar
-function paintStaplarup(x) {
-    ctx.fillStyle ="rgb(177, 255, 0)"; 
-    // stapel 1 
-    ctx.fillRect(x, 0, 100, 150);
-    // stapel 2
-    ctx.fillRect(x + 350, 0, 100, 350);
+/////////////////////////// Rita staplar //////////////////////////////////////////////
+
+function staplar(x, y, w, h){
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+
+
+    this.paint = function(){
+        ctx.fillRect(this.x, this.y, this.w, this.h);
+    }
+
+
 
 }
 
+function paintstaplar(x, y) {
+
+        //övre
+        object.push(new staplar(x, y, 100, 200));
+        object.push(new staplar(x + 300, y, 100, 300));
+
+        //undre 
+        object.push(new staplar(x, y + 500, 100, 400));
+        object.push(new staplar(x + 300, y + 500, 100, 400));
+    }
 
 
 
-// Rita nedre staplar
-function paintStaplardown(x, y) {
-    //stapel 1
-    ctx.fillRect(x , y + 400, 100, 450);
-    // stapel 2
-    ctx.fillRect(x + 350, y + 575 , 100, 350);
-}
+    //////////////////////////// Rita Karaktär /////////////////////////////////////
+    function egg(x, y, w, h){
+        this.x = x;
+        this.y = y;
+        this.w = w;
+        this.h = h;
+
+        this.paint = function(){
+            ctx.fillStyle="#00f"
+            ctx.fillRect(this.x, this.y, this.w, this.h);
+           
+        }
+
+        
+        // Hitbox
+    this.hitBox = function(i) {
+        if(this.x > object[i].x && this.x < object[i].x + 100 && this.y > object[i].y && this.y < object[i].y + object[i].h) {
+            console.log(object);
+        }
+    }
+        
+    }
 
 
 
-
-// Rita Karaktär
-function paintboll(x, y){
-    ctx.drawImage(egg1, x, y, 70, 70);
-}
-
-function wallpaper(x){
-    ctx.drawImage(background, x, 0, 5600, 790);
-}
-
-// Uppdatering
-function update() {
-    // Suddar spelplanen
-    ctx.clearRect(0, 0, spelplan.width, spelplan.height);
-    wallpaper(mx);
-    // Rita ut övre staplar
-    paintStaplarup(upx);
-    // Rita ut nedre staplar
-    paintStaplardown(downx, downy);
-    // Rita ut karaktär
-    paintboll(plx, ply);
-    // Uppdaterar positioner
-    ply += plvy 
-    upx += upvx 
-    downx += downvx
-    mx += mvx
+    //////////////////////////////// rita bakrunds bild/////////////////////////////////////////
+    function wallpaper(x){
+        ctx.drawImage(background, x, 0, 5600, 790);
+    }
 
 
-    // Crash funktion
-    if(ply < (150) && plx > upx - 70 && plx < upx + 70 || ply > ((downy - 70) + 400) && plx > downx - 70 && plx < downx + 70 || ply < 0 || ply > 720) {  
+    // Uppdatering
+    function update() {
+     
+        ctx.clearRect(0, 0, spelplan.width, spelplan.height);
+        wallpaper(mx);
+        // rita karaktär
+        pl.paint();
+        // paintboll(plx, ply)
+        paintstaplar(sx, sy)
+        mx += mvx
 
+        pl.y += plvy;
 
-
-
-
-
-        // Visa eggsplash när man kraschat.
-        document.getElementById("eggsplash").style.visibility = "visible"
-        // Pausar allt när man kraschat.
-        upvx = 0;
-        downvx = 0;
-        plvy = 0;
-        mvx = 0;
-
-     //   var bfSound = new Howl({
-    //     urls: ['ljud/failsound.mp3']
+        object[1].paint();
+        object[2].paint();
+        object[3].paint();
+        object[4].paint();
+        
+    
+        
+        
+        for(var i = 0; i < object.length; i++) {
+            pl.hitBox(i);
+             object[i].x += vx;
+           
             
-    // }).play();
+         if(object[i].x == 0){
+                object.splice(i,1);
+                object.splice(i,2);
+                object.splice(i,3);
+                object.splice(i,4);
+            }
+            
+          
+            
+            // krash till övre staplar
+           /* if(objectu[i].x < (pl.x + pl.w) && (objectu[i].y + objectu[i].h) > pl.y){
+                plvy = 0;
+                vx = 0;
+                mvx = 0;
+                fail = "true"
+                document.getElementById("eggsplash").style.visibility = "Visible"
+            }
+                 // krash till undre staplar
+            if(objectd[i].x < (pl.x + pl.w) && (objectd[i].x + objectd[i].w) > pl.x && objectd[i].y < pl.y){
+                plvy = 0;
+                vx = 0;
+                mvx = 0;
+                fail = "true"
+                document.getElementById("eggsplash").style.visibility = "Visible"
+            } */
 
 
-    }    
+        }
 
-    //Poängsystem
-    if(downx === 10){
-        Score++;
-        document.getElementById("Score").innerHTML = "Points: " + Score;
 
     }
-}
 
-// Knapptryck
-function keyDown(e){
 
-    e.preventDefault()
+    function keyDown(e){
 
-    // hur snabbt karaktären ska åka uppåt 
-    if(e.keyCode == 32){
-        plvy = -15;
-    }   
+        e.preventDefault()
 
-    //  Återställer allt till det ursprungliga (restart knapp) (enter)
-    if(e.keyCode == 13){
-        location = location;
+        // hur snabbt karaktären ska åka uppåt 
+        if(e.keyCode == 32 && fail == "false"){
+            plvy = -15;
+        }   
+
+        //  Återställer allt till det ursprungliga (restart knapp) (enter)
+        if(e.keyCode == 13){
+            location = location;
+
+        }  
 
     }
-    // Nivåer med olika hastigheter
 
-    // Knapptryck 1
-    if(e.keyCode == 49){
-        downvx = -15;
-        upvx = - 15;
-    }   
-    // Knapptryck 2
-    if(e.keyCode == 50){
-        downvx = - 20;
-        upvx = - 20;
-    }   
-    // Knapptryck 3
-    if(e.keyCode == 51){
-        downvx = - 25 ;
-        upvx = - 25;
-    }   
 
-}
-//checkar att github fungerar 
+    function keyUp(e){
+        //hur stor gravitation karaktär ska ha neråt
+        if(e.keyCode == 32 && fail == "false"){
+            plvy = 10;
+        }   
+    }
 
-function keyUp(e){
-    //hur stor gravitation karaktär ska ha neråt
-    if(e.keyCode == 32){
-        plvy = 10;
-    }   
-}
-
+ 
 
